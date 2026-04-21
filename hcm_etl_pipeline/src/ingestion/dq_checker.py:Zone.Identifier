@@ -1,4 +1,0 @@
-[ZoneTransfer]
-ZoneId=3
-ReferrerUrl=https://claude.ai/chat/533dcd8e-ea9c-4313-9720-868bc10607f5
-HostUrl=https://claude.ai/api/organizations/13d705af-4c46-411f-b1d4-c4ee979522ec/conversations/533dcd8e-ea9c-4313-9720-868bc10607f5/wiggle/download-file?path=%2Fmnt%2Fuser-data%2Foutputs%2Fetl_pipeline%2Fsrc%2Fingestion%2Fdq_checker.py
