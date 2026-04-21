@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: hcm_etl_pipeline
+Version: 0.1.0
+Summary: HCM ETL Pipeline
+Requires-Dist: pyspark
+Requires-Dist: pandas
+Requires-Dist: python-dotenv

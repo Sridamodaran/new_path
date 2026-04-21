@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]      # tools needed to build/install this project
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hcm_etl_pipeline"
+version = "0.1.0"
+description = "HCM ETL Pipeline"
+dependencies = [
+    "pyspark",
+    "pandas",
+    "python-dotenv"
+]
+
+[tool.setuptools]
+packages = ["src"]   # your actual code lives here
