@@ -317,7 +317,7 @@ def write_manifest(filepath: str, dataset_name: str, version: str, run_date: str
 # ─── Main ─────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output_dir", default="\\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\landing", help="Output directory")
+    parser.add_argument("--output_dir", default=r"\\wsl$\Ubuntu\home\srid01\hcm\myproject\data", help="Output directory")
     parser.add_argument("--rows", type=int, default=500, help="Number of employee rows")
     parser.add_argument("--run_date", default=datetime.now().strftime("%Y%m%d"), help="Run date YYYYMMDD")
     args = parser.parse_args()
