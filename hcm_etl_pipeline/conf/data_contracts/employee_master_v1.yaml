@@ -1,0 +1,213 @@
+# Data Contract — employee_master
+# Owner      : Business / HR Team
+# Version    : v1
+# Confluence : https://confluence.myorg.com/data-contracts/employee_master_v1
+# Last updated: 2024-01-15
+# Status     : ACTIVE
+
+dataset:
+  name: employee_master
+  version: v1
+  layer: raw
+  database: hcm.myproject
+  table: raw_employee_master
+  format: parquet
+  partition_col: dt
+  description: >
+    Master record of all employees. Used for SCD2 in staging.
+    One record per employee per load date.
+
+# ── Mandatory columns (pipeline HARD FAILS if NULL) ───────────────────────────
+# Key rule: if employee_id is NULL, reject the entire row (cannot identify record)
+mandatory_columns:
+  - name: employee_id
+    type: StringType
+    nullable: false
+    business_rule: "Must match pattern EMP[0-9]{6}"
+    reject_if_null: true
+
+  - name: first_name
+    type: StringType
+    nullable: false
+    reject_if_null: true
+
+  - name: last_name
+    type: StringType
+    nullable: false
+    reject_if_null: true
+
+  - name: department
+    type: StringType
+    nullable: false
+    reject_if_null: true
+    allowed_values:
+      - Engineering
+      - Finance
+      - HR
+      - Operations
+      - Legal
+      - Sales
+      - Marketing
+      - IT
+      - Compliance
+      - Risk
+
+  - name: employment_status
+    type: StringType
+    nullable: false
+    reject_if_null: true
+    allowed_values:
+      - Active
+      - Inactive
+
+# ── Optional columns ──────────────────────────────────────────────────────────
+optional_columns:
+  - name: middle_name
+    type: StringType
+    nullable: true
+
+  - name: date_of_birth
+    type: DateType
+    format: "yyyy-MM-dd"
+    nullable: true
+
+  - name: date_of_joining
+    type: DateType
+    format: "yyyy-MM-dd"
+    nullable: true
+
+  - name: date_of_exit
+    type: DateType
+    format: "yyyy-MM-dd"
+    nullable: true
+
+  - name: designation
+    type: StringType
+    nullable: true
+
+  - name: employment_type
+    type: StringType
+    nullable: true
+    allowed_values: [Permanent, Contract, Intern]
+
+  - name: cost_center
+    type: StringType
+    nullable: true
+
+  - name: location
+    type: StringType
+    nullable: true
+
+  - name: gender
+    type: StringType
+    nullable: true
+    allowed_values: [M, F, Other]
+
+  - name: nationality
+    type: StringType
+    nullable: true
+
+  - name: email
+    type: StringType
+    nullable: true
+    regex: "^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$"
+
+  - name: phone
+    type: StringType
+    nullable: true
+    cleansing: strip_non_numeric_except_plus
+
+  - name: manager_id
+    type: StringType
+    nullable: true
+
+  - name: grade
+    type: StringType
+    nullable: true
+
+  - name: ssn
+    type: StringType
+    nullable: true
+    cleansing: remove_dashes_and_spaces   # raw layer strips S-S-N → SSN
+
+  - name: bank_account_number
+    type: StringType
+    nullable: true
+
+  - name: pan_number
+    type: StringType
+    nullable: true
+    regex: "^[A-Z]{5}[0-9]{4}[A-Z]$"
+
+  - name: aadhar_number
+    type: StringType
+    nullable: true
+
+  - name: country
+    type: StringType
+    nullable: true
+
+  - name: created_ts
+    type: TimestampType
+    format: "yyyy-MM-dd HH:mm:ss"
+    nullable: true
+
+# ── DQ rules (applied per column in dq_checker.py) ───────────────────────────
+dq_rules:
+  - column: employee_id
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: employee_id
+    check: regex_match
+    pattern: "^EMP[0-9]{6}$"
+    severity: HARD_FAIL
+
+  - column: first_name
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: last_name
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: department
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: department
+    check: allowed_values
+    allowed: [Engineering, Finance, HR, Operations, Legal, Sales, Marketing, IT, Compliance, Risk]
+    severity: SOFT_FAIL   # flag but don't reject — alert team
+
+  - column: employment_status
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: employment_status
+    check: allowed_values
+    allowed: [Active, Inactive]
+    severity: HARD_FAIL
+
+  - column: date_of_birth
+    check: date_format
+    format: "yyyy-MM-dd"
+    severity: SOFT_FAIL
+
+  - column: email
+    check: regex_match
+    pattern: "^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$"
+    severity: SOFT_FAIL
+
+  - column: pan_number
+    check: regex_match
+    pattern: "^[A-Z]{5}[0-9]{4}[A-Z]$"
+    severity: SOFT_FAIL
+
+# ── Schema evolution policy ───────────────────────────────────────────────────
+schema_evolution:
+  allow_additive_columns: true
+  block_type_changes: true
+  block_column_removal: true
+  block_renames: true
+  on_incompatible_change: quarantine_and_alert

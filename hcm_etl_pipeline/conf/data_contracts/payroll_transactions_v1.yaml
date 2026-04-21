@@ -1,0 +1,152 @@
+# Data Contract — payroll_transactions
+# Owner      : Finance / Payroll Team
+# Version    : v1
+
+dataset:
+  name: payroll_transactions
+  version: v1
+  layer: raw
+  database: hcm.myproject
+  table: raw_payroll_transactions
+  format: parquet
+  partition_col: dt
+
+mandatory_columns:
+  - name: transaction_id
+    type: StringType
+    nullable: false
+    reject_if_null: true
+
+  - name: employee_id
+    type: StringType
+    nullable: false
+    reject_if_null: true
+
+  - name: payroll_month
+    type: StringType
+    nullable: false
+    reject_if_null: true
+
+  - name: gross_salary
+    type: DoubleType
+    nullable: false
+    reject_if_null: true
+
+  - name: net_salary
+    type: DoubleType
+    nullable: false
+    reject_if_null: true
+
+optional_columns:
+  - name: payroll_year
+    type: StringType
+    nullable: true
+
+  - name: basic_salary
+    type: DoubleType
+    nullable: true
+
+  - name: hra
+    type: DoubleType
+    nullable: true
+
+  - name: special_allowance
+    type: DoubleType
+    nullable: true
+
+  - name: conveyance_allowance
+    type: DoubleType
+    nullable: true
+
+  - name: medical_allowance
+    type: DoubleType
+    nullable: true
+
+  - name: incentive_amount
+    type: DoubleType
+    nullable: true
+
+  - name: overtime_pay
+    type: DoubleType
+    nullable: true
+
+  - name: pf_deduction
+    type: DoubleType
+    nullable: true
+
+  - name: esi_deduction
+    type: DoubleType
+    nullable: true
+
+  - name: income_tax_deduction
+    type: DoubleType
+    nullable: true
+
+  - name: loan_deduction
+    type: DoubleType
+    nullable: true
+
+  - name: other_deductions
+    type: DoubleType
+    nullable: true
+
+  - name: payment_mode
+    type: StringType
+    nullable: true
+    allowed_values: [NEFT, IMPS, Cheque]
+
+  - name: payment_date
+    type: DateType
+    format: "yyyy-MM-dd"
+    nullable: true
+
+  - name: payment_status
+    type: StringType
+    nullable: true
+    allowed_values: [Processed, Pending, Failed]
+
+  - name: created_ts
+    type: TimestampType
+    format: "yyyy-MM-dd HH:mm:ss"
+    nullable: true
+
+dq_rules:
+  - column: transaction_id
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: employee_id
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: payroll_month
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: gross_salary
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: gross_salary
+    check: positive_number
+    severity: HARD_FAIL
+
+  - column: net_salary
+    check: not_null
+    severity: HARD_FAIL
+
+  - column: payment_mode
+    check: allowed_values
+    allowed: [NEFT, IMPS, Cheque]
+    severity: SOFT_FAIL
+
+  - column: payment_status
+    check: allowed_values
+    allowed: [Processed, Pending, Failed]
+    severity: SOFT_FAIL
+
+schema_evolution:
+  allow_additive_columns: true
+  block_type_changes: true
+  block_column_removal: true
+  on_incompatible_change: quarantine_and_alert
