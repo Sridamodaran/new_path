@@ -2,11 +2,11 @@
 # Development environment config
 
 storage:
-  landing: /data/landing
-  raw: /data/raw
-  staging: /data/staging
-  presentation: /data/presentation
-  audit: /data/audit
+  landing: \\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\landing
+  raw: \\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\raw
+  staging: \\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\staging
+  presentation: \\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\presentation
+  audit: \\wsl.localhost\Ubuntu\home\srid01\hcm\myproject\data\audit
 
 hive:
   database: hcm_dev
